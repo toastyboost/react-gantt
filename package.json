@@ -57,5 +57,12 @@
     "storybook-dark-mode": "^0.6.1",
     "ts-loader": "^8.0.2",
     "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "@types/moment": "^2.13.0",
+    "@types/styled-components": "^5.1.2",
+    "moment": "^2.27.0",
+    "styled-components": "^5.1.1",
+    "styled-normalize": "^8.0.7"
   }
 }
