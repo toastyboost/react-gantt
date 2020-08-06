@@ -1,9 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
+import 'moment/locale/ru';
 
 import { CalendarContent, CalendarHeader } from './calendarLayout';
 import { GenericStyles } from './styles';
+import { Timeline } from './timeline';
 
 export type Project = {
   project: string;
@@ -16,12 +18,9 @@ type GanttProps = {
 };
 
 export const Gantt = ({ data }: GanttProps) => {
-  const start = moment().startOf('week').add(1, 'day').toISOString();
-  const end = moment().endOf('week').add(1, 'day').toISOString();
-
-  const currentRange = `${moment(start).format('DD-MM')} -- ${moment(
-    end,
-  ).format('DD-MM')}`;
+  const start = '2019-01-01';
+  const end = '2020-07-01';
+  const range = 'month';
 
   const tableData = data.reduce((acc, value) => {
     const { project, start_time, end_time } = value;
@@ -39,13 +38,6 @@ export const Gantt = ({ data }: GanttProps) => {
     <>
       <GenericStyles />
       <Container>
-        <Header>
-          <CurrentRange>
-            Где работал Дима с <br />
-            {currentRange}
-          </CurrentRange>
-          <CalendarHeader start={start} end={end} data={tableData} />
-        </Header>
         <Aside>
           <Projects>
             {Object.keys(tableData).map((project, key) => (
@@ -54,7 +46,7 @@ export const Gantt = ({ data }: GanttProps) => {
           </Projects>
         </Aside>
         <Content>
-          <CalendarContent start={start} end={end} data={tableData} />
+          <Timeline data={tableData} start={start} end={end} range={range} />
         </Content>
       </Container>
     </>
@@ -90,6 +82,7 @@ const Aside = styled.div`
   border-top: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   min-height: 100vh;
+  margin-top: 51px;
 `;
 
 const Content = styled.div`

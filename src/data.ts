@@ -1,5 +1,51 @@
 import moment from 'moment';
 
+export type Project = {
+  project: string;
+  start_time: string;
+  end_time: string;
+  hours: number;
+};
+
+export const generateData = (): Project[] => {
+  const projects = ['Leem', 'RMR', 'ToYou', 'Vocation', 'Presales'];
+  let days = 0;
+
+  const workHours = 8;
+  const dateFormat = 'YYYY-MM-DD hh:mm';
+  const data = [];
+
+  while (days <= 3) {
+    days++;
+
+    let hours = 0;
+    let dayProjects = [] as any;
+
+    while (hours <= 8) {
+      const randomHour = Math.floor(Math.random() * workHours);
+
+      if (randomHour !== 0) {
+        const wasteTime = hours + randomHour;
+
+        const now = moment().startOf('day');
+
+        dayProjects.push({
+          project: projects[Math.floor(Math.random() * projects.length)],
+          start_time: now.add(hours, 'hours').format(dateFormat),
+          end_time: now.add(wasteTime, 'hours').format(dateFormat),
+          hours: randomHour,
+        });
+
+        hours = wasteTime;
+      }
+    }
+
+    data.push(dayProjects);
+  }
+
+  return data;
+};
+
 export const ganttData = [
   // day 1
   {
@@ -57,36 +103,22 @@ export const ganttData = [
     end_time: moment().add(4, 'day').add(8, 'hour').toISOString(),
   },
   // day 6
+  // day 7
+  // day 8
   {
     project: 'PreSales',
-    start_time: moment().add(5, 'day').toISOString(),
-    end_time: moment().add(5, 'day').add(6, 'hour').toISOString(),
+    start_time: moment().add(7, 'day').toISOString(),
+    end_time: moment().add(7, 'day').add(6, 'hour').toISOString(),
   },
   {
     project: 'RMR',
-    start_time: moment().add(5, 'day').toISOString(),
-    end_time: moment().add(5, 'day').add(2, 'hour').toISOString(),
+    start_time: moment().add(7, 'day').toISOString(),
+    end_time: moment().add(7, 'day').add(2, 'hour').toISOString(),
+  },
+  // day 9
+  {
+    project: 'ToYou',
+    start_time: moment().add(8, 'day').toISOString(),
+    end_time: moment().add(8, 'day').add(8, 'hour').toISOString(),
   },
 ];
-
-// Дима
-// Январь:
-// – 75% Leem
-// – 25% Организационные задачи
-// Февраль:
-// – 50% Leem
-// – 50% Организационные задачи
-// Март:
-// – 25% ToYou
-// – 50% Организационные задачи
-// – 25% Неутилизация
-// Апрель:
-// – 25% ToYou
-// – 25% Leem
-// – 50% Организационные задачи
-// Май:
-// Отпуск
-// Июнь:
-// – 75% Пресейлы
-// – 25% Организационные задачи
-// отдельно в июне с 20 по 24 100% iTrace
