@@ -24,7 +24,7 @@ export const GenericStyles = createGlobalStyle`
     --title-color: rgba(0, 0, 0, 1);
     --link-active: #03a9f4;
     --link-hover: #2196f3;
-    --border-color: rgba(0, 0, 0, 0.05);
+    --border-color: rgba(0, 0, 0, 0.03);
     --body-bg: #fff;
     --block-bg: #fff;
     --red: #ff4748;

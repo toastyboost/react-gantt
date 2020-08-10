@@ -61,6 +61,7 @@
   "dependencies": {
     "@types/moment": "^2.13.0",
     "@types/styled-components": "^5.1.2",
+    "antd": "^4.5.2",
     "moment": "^2.27.0",
     "styled-components": "^5.1.1",
     "styled-normalize": "^8.0.7"

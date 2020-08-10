@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { getWorktimeCombinations } from './libs';
 
 export type Project = {
   project: string;
@@ -7,118 +8,64 @@ export type Project = {
   hours: number;
 };
 
-export const generateData = (): Project[] => {
-  const projects = ['Leem', 'RMR', 'ToYou', 'Vocation', 'Presales'];
-  let days = 0;
+const dateFormat = 'YYYY-MM-DD HH:mm';
+const projectsNames = [
+  'Leem',
+  'RMR',
+  'ToYou',
+  'Presales',
+  'Отпуск',
+  'Больничный',
+];
 
-  const workHours = 8;
-  const dateFormat = 'YYYY-MM-DD hh:mm';
-  const data = [];
+const workHoursCombinations = getWorktimeCombinations();
 
-  while (days <= 3) {
-    days++;
+const getRandomHour = () =>
+  workHoursCombinations[
+    Math.floor(Math.random() * workHoursCombinations.length)
+  ];
 
-    let hours = 0;
-    let dayProjects = [] as any;
+const getRandomProject = () =>
+  projectsNames[Math.floor(Math.random() * projectsNames.length)];
 
-    while (hours <= 8) {
-      const randomHour = Math.floor(Math.random() * workHours);
-
-      if (randomHour !== 0) {
-        const wasteTime = hours + randomHour;
-
-        const now = moment().startOf('day');
-
-        dayProjects.push({
-          project: projects[Math.floor(Math.random() * projects.length)],
-          start_time: now.add(hours, 'hours').format(dateFormat),
-          end_time: now.add(wasteTime, 'hours').format(dateFormat),
-          hours: randomHour,
-        });
-
-        hours = wasteTime;
-      }
-    }
-
-    data.push(dayProjects);
-  }
-
-  return data;
+type GanttData = {
+  start: string;
+  end: string;
 };
 
-export const ganttData = [
-  // day 1
-  {
-    project: 'Leem',
-    start_time: moment().toISOString(),
-    end_time: moment().add(6, 'hours').toISOString(),
-  },
-  {
-    project: 'RMR',
-    start_time: moment().toISOString(),
-    end_time: moment().add(2, 'hours').toISOString(),
-  },
-  // day 2
-  {
-    project: 'Leem',
-    start_time: moment().add(1, 'day').toISOString(),
-    end_time: moment().add(1, 'day').add(4, 'hour').toISOString(),
-  },
-  {
-    project: 'RMR',
-    start_time: moment().add(1, 'day').toISOString(),
-    end_time: moment().add(1, 'day').add(4, 'hour').toISOString(),
-  },
-  // day 3
-  {
-    project: 'ToYou',
-    start_time: moment().add(2, 'day').toISOString(),
-    end_time: moment().add(2, 'day').add(2, 'hour').toISOString(),
-  },
-  {
-    project: 'RMR',
-    start_time: moment().add(2, 'day').toISOString(),
-    end_time: moment().add(2, 'day').add(4, 'hour').toISOString(),
-  },
-  // day 4
-  {
-    project: 'Leem',
-    start_time: moment().add(3, 'day').toISOString(),
-    end_time: moment().add(3, 'day').add(2, 'hour').toISOString(),
-  },
-  {
-    project: 'ToYou',
-    start_time: moment().add(3, 'day').toISOString(),
-    end_time: moment().add(3, 'day').add(2, 'hour').toISOString(),
-  },
-  {
-    project: 'RMR',
-    start_time: moment().add(3, 'day').toISOString(),
-    end_time: moment().add(3, 'day').add(4, 'hour').toISOString(),
-  },
-  // day 5
-  {
-    project: 'Vocation',
-    start_time: moment().add(4, 'day').toISOString(),
-    end_time: moment().add(4, 'day').add(8, 'hour').toISOString(),
-  },
-  // day 6
-  // day 7
-  // day 8
-  {
-    project: 'PreSales',
-    start_time: moment().add(7, 'day').toISOString(),
-    end_time: moment().add(7, 'day').add(6, 'hour').toISOString(),
-  },
-  {
-    project: 'RMR',
-    start_time: moment().add(7, 'day').toISOString(),
-    end_time: moment().add(7, 'day').add(2, 'hour').toISOString(),
-  },
-  // day 9
-  {
-    project: 'ToYou',
-    start_time: moment().add(8, 'day').toISOString(),
-    end_time: moment().add(8, 'day').add(8, 'hour').toISOString(),
-  },
-];
+export const ganttData = ({ start, end }: GanttData): Project[] => {
+  const daysBetween = Math.abs(moment(end).diff(moment(start), 'days'));
+  let currentDay = 0;
+
+  let projects = [] as Project[];
+
+  while (currentDay < daysBetween) {
+    currentDay++;
+
+    const now = moment(start)
+      .startOf('month')
+      .add(currentDay, 'day')
+      .add(8, 'hour');
+
+    const isWeekends = now.day() === 0 || now.day() === 6;
+
+    if (!isWeekends) {
+      const randomHours = getRandomHour();
+
+      randomHours.map((hour, key) => {
+        projects.push({
+          project: getRandomProject(),
+          start_time: now.add(hour - hour[key + 1], 'hours').format(dateFormat),
+          end_time: now.add(hour, 'hours').format(dateFormat),
+          hours: hour,
+        });
+      });
+    }
+  }
+
+  return projects
+    .filter((item) => item.hours !== 0)
+    .sort((a, b) =>
+      moment.utc(moment(a.start_time)).diff(moment.utc(moment(b.end_time))),
+    );
+};
